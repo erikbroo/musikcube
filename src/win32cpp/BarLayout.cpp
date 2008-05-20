@@ -36,7 +36,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <win32cpp/BarLayout.hpp>
 
 #include <algorithm>

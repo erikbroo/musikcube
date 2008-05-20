@@ -36,7 +36,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <win32cpp/Config.hpp>
 #include <boost/scoped_ptr.hpp>
 

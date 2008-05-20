@@ -36,7 +36,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <win32cpp/Locale.hpp>
 #include "boost/filesystem/operations.hpp"
 

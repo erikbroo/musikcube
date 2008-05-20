@@ -36,7 +36,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <win32cpp/Win32Config.hpp>
 #include <win32cpp/ProgressBar.hpp>
 

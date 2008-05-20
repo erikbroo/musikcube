@@ -41,9 +41,8 @@
 
 
 
-#include "config.h"
+#include <core/config.h>
 
-#include <boost/asio.hpp>
 
 #include <stdio.h>
 #include <cstdlib>
@@ -66,5 +65,5 @@
 #include <string>
 #include <sigslot/sigslot.h>
 
-#include "vld/vld.h"
+#include <vld/vld.h>
 

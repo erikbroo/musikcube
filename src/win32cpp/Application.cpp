@@ -36,7 +36,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <win32cpp/Application.hpp>
 #include <win32cpp/ApplicationThread.hpp>
 

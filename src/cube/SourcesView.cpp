@@ -36,9 +36,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <pch.hpp>
+#include "pch.hpp"
 #include <cube/SourcesView.hpp>
 #include <cube/BrowseView.hpp>
+#include <cube/AlbumCoverView.hpp>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +51,7 @@ using namespace musik::cube;
 : lastHotRowIndex(-1)
 , listView(NULL)
 , defaultView(new Label(_T("No item selected. You shouldn't see this!")))
+, albumCoverController(NULL)
 {
     this->listView = new ListView();
     this->listView->Created.connect(this, &SourcesView::OnListViewCreated);
@@ -60,13 +62,23 @@ using namespace musik::cube;
     // make sure not to delete any SourcesItem views, and also
     // automatically delete the defaultView.
     this->SetView(this->defaultView);
+    delete this->albumCoverController;
 }
 
 void        SourcesView::OnCreated()
 {
     // add main splitter as the top level window's main window
+
+    // Add album cover splitter
+    AlbumCoverView *albumCover              = new AlbumCoverView();
+    this->albumCoverController              = new AlbumCoverController(*albumCover);
+    albumCover->controller                  = this->albumCoverController;
+
+    Splitter *albumCoverSplitter    = new Splitter(SplitRow,this->listView,albumCover);
+    albumCoverSplitter->SetAnchorSize(250);
+
     this->splitter = this->AddChild(
-        new Splitter(SplitColumn, this->listView, this->defaultView));
+        new Splitter(SplitColumn, albumCoverSplitter, this->defaultView));
 
     this->splitter->SetAnchorSize(125);
  }

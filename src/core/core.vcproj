@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../;../3rdparty/include/"
+				AdditionalIncludeDirectories="./;../;../3rdparty/include/;../3rdparty/include/jpeg-6b/"
 				PreprocessorDefinitions="BOOST_ALL_NO_LIB;WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -106,7 +106,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="./;../;../3rdparty/include/"
+				AdditionalIncludeDirectories="./;../;../3rdparty/include/;../3rdparty/include/jpeg-6b/"
 				PreprocessorDefinitions="BOOST_ALL_NO_LIB;WIN32;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -331,6 +331,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Query\ThumbnailInfo.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Query\ThumbnailInfo.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Query\TrackMetadata.cpp"
 						>
 					</File>
@@ -409,6 +417,14 @@
 				</File>
 				<File
 					RelativePath=".\MetadataValue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Thumbnail.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Thumbnail.h"
 					>
 				</File>
 				<File

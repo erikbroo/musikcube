@@ -43,6 +43,7 @@
 #include <win32cpp/ListView.hpp>
 
 #include <cube/SourcesCategory.hpp>
+#include <cube/AlbumCoverController.hpp>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -75,6 +76,7 @@ protected:  ListView::ColumnRef mainColumn;
 protected:  int lastHotRowIndex;
 protected:  Window* defaultView;
 protected:  Splitter* splitter;
+protected:  AlbumCoverController* albumCoverController;
 };
 
 //////////////////////////////////////////////////////////////////////////////
