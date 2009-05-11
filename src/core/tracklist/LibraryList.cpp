@@ -34,12 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/tracklist/LibraryList.h>
 #include <core/LibraryTrack.h>
 #include <core/Query/SortTracks.h>

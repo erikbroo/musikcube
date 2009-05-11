@@ -33,12 +33,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/xml/WriterNode.h>
 #include <core/xml/Writer.h>
 
@@ -54,7 +49,7 @@ WriterNode::WriterNode(WriterNode &parentNode,std::string name)
     if(parentNode.node){
         parentNode.node->childNodes.push_back(this->node);
         // if a childnode has been added to a node, it should be set to started
-        parentNode.node->status |= Node::Started;
+        parentNode.node->status |= Node::Status::Started;
     }
 
     this->writer->Send();
@@ -75,7 +70,7 @@ WriterNode::WriterNode()
 //////////////////////////////////////////
 WriterNode::~WriterNode(){
     if(this->node){
-        this->node->status  |= Node::Started | Node::Ended;
+        this->node->status  |= Node::Status::Started | Node::Status::Ended;
         if(this!=this->writer){
             this->writer->Send();
         }

@@ -57,9 +57,9 @@ class Stream {
     public:
         static StreamPtr Create(unsigned int options=0);
 
-        typedef enum {
+        enum Options:unsigned int{
             NoDSP = 1
-        } Options;
+        };
 
     private:
         Stream(unsigned int options);

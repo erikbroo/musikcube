@@ -63,10 +63,10 @@ class LibraryFactory{
 		///\brief
 		///enum for the different library types
 		//////////////////////////////////////////
-        typedef enum {
+		enum Types:int{
 			LocalDB=1,
 			Remote=2
-        } Types;
+		};
 
 		typedef std::vector<LibraryPtr> LibraryVector;
 		typedef std::map<int,LibraryPtr> LibraryMap;

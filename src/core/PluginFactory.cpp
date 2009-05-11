@@ -36,9 +36,9 @@
 
 #include "pch.hpp"
 #include <core/PluginFactory.h>
-#include <core/config_filesystem.h>
 #include <core/Common.h>
 
+#include <boost/filesystem.hpp>
 
 using namespace musik::core;
 
@@ -60,8 +60,6 @@ PluginFactory::~PluginFactory(void){
     for(std::vector<void*>::iterator oDLL=this->loadedDLLs.begin();oDLL!=this->loadedDLLs.end();){
         #ifdef WIN32
 //            FreeLibrary( (HMODULE)(*oDLL) );
-	#else
-	      dlclose(*oDLL);
         #endif
         oDLL    = this->loadedDLLs.erase(oDLL);
     }
@@ -72,11 +70,11 @@ void PluginFactory::LoadPlugins(){
     utfstring sPluginDir(GetPluginDirectory());
 
     // Open plugin directory
-    boost::filesystem::utfpath oDir(sPluginDir);
+    boost::filesystem::wpath oDir(sPluginDir);
 
     try{
-        boost::filesystem::utfdirectory_iterator oEndFile;
-        for(boost::filesystem::utfdirectory_iterator oFile(oDir);oFile!=oEndFile;++oFile){
+        boost::filesystem::wdirectory_iterator oEndFile;
+        for(boost::filesystem::wdirectory_iterator oFile(oDir);oFile!=oEndFile;++oFile){
             if(boost::filesystem::is_regular(oFile->status())){
                 // This is a file
                 utfstring sFile(oFile->path().string());
@@ -103,25 +101,7 @@ void PluginFactory::LoadPlugins(){
 
 
                     }
-		#else	//GNU or other
-                    if(sFile.substr(sFile.size()-3)==UTF(".so")){    // And a shared lib
-		        void* oDLL = dlopen(sFile.c_str(), RTLD_NOW);
-			char* err;
-			if ((err = dlerror()) != NULL) {
-			    std::cerr << "Couldn't open shared library " << sFile << std::endl;
-			}
-			else	{
-                            IPlugin* getPluginCall = (IPlugin*)dlsym(oDLL,"GetPlugin");
-                            if(getPluginCall){
-                                this->loadedPlugins.push_back(getPluginCall);
-			        this->loadedDLLs.push_back(oDLL);
-			    }
-			    else	{
-			        dlclose(oDLL);
-			    }
-			}
-		    }
-                #endif //WIN32
+                #endif
             }
         }
     }

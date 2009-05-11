@@ -37,15 +37,42 @@
 // Precompiled headers
 #pragma once
 
-//#pragma warning (disable : 4996 4018 4482)
+#pragma warning (disable : 4996 4018 4482)
+
+#include <vld/vld.h>
 
 #include <core/config.h>
 
 #include <sigslot/sigslot.h>
 #include <boost/shared_ptr.hpp>
-#include <boost/iostreams/stream.hpp>
 
 #include <core/db/Connection.h>
 #include <core/db/Statement.h>
 #include <core/db/CachedStatement.h>
+
+//#include <core/Query/Base.h>
+
+//#include <core/Track.h>
+//#include <core/TrackMeta.h>
+
+/*#include <core/xml/Node.h>
+#include <core/xml/WriterNode.h>
+#include <core/xml/ParserNode.h>*/
+//#include <core/Library/Base.h>
+
+/*
+
+
+#include <stdio.h>
+#include <cstdlib>
+#include <iostream>
+#include <stdlib.h>
+
+
+
+#include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/noncopyable.hpp>
+
+*/
 

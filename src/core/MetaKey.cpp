@@ -45,7 +45,7 @@ MetaKey::MetaKey(void){
 MetaKey::~MetaKey(void){
 }
 
-MetaKey::Type MetaKey::TypeOf(std::string metaKey){
+enum MetaKey::Type MetaKey::TypeOf(std::string metaKey){
     if(metaKey=="bpm"){
         return MetaKey::Float;
     }else if(metaKey=="track" || metaKey=="year"){

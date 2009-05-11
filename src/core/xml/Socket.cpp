@@ -33,12 +33,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/xml/Socket.h>
 
 using namespace musik::core::xml;
@@ -59,11 +54,6 @@ bool SocketReader::Read(long recommendedBytes){
     this->bufferSize    = this->socket.read_some(boost::asio::buffer(this->buffer),error);
 
     if(!error){
-
-/*		if(this->bufferSize && this->buffer.c_array()[this->bufferSize-1]==(char)0){
-			this->bufferSize--;
-		}
-*/
         return true;
     }
 

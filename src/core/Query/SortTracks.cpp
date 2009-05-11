@@ -34,12 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/Query/SortTracks.h>
 #include <core/Library/Base.h>
 #include <core/config_format.h>
@@ -148,13 +143,13 @@ bool Query::SortTracks::ParseQuery(Library::Base *library,db::Connection &db){
         db::Statement insertTracks(insertValues.c_str(),db);
 
         db::Statement selectMetaValue("SELECT mv.sort_order FROM meta_values mv,track_meta tm WHERE tm.meta_value_id=mv.id AND tm.track_id=? AND mv.meta_key_id=? LIMIT 1",db);
-		for(std::size_t i(0);i<this->tracksToSort.size();++i){
+        for(int i(0);i<this->tracksToSort.size();++i){
             DBINT track(this->tracksToSort[i]);
             insertTracks.BindInt(0,track);
 
             // Lets find the meta values
             //sortFieldsMetakeyId
-            for(std::size_t field(0);field<sortFieldsMetakeyId.size();++field){
+            for(int field(0);field<sortFieldsMetakeyId.size();++field){
                 int metakeyId(sortFieldsMetakeyId[field]);
                 selectMetaValue.BindInt(0,track);
                 selectMetaValue.BindInt(1,metakeyId);

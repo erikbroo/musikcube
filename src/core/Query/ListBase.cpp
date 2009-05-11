@@ -34,12 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/Query/ListBase.h>
 #include <core/Library/Base.h>
 #include <core/Common.h>
@@ -80,7 +75,7 @@ bool Query::ListBase::RunCallbacks(Library::Base *library){
 
     {
         boost::mutex::scoped_lock lock(library->libraryMutex);
-        if( (this->status & Base::Ended)!=0){
+        if( (this->status & Status::Ended)!=0){
             // If the query is finished, this function should return true to report that it is finished.
             bReturn    = true;
         }
@@ -154,7 +149,7 @@ bool Query::ListBase::ParseTracksSQL(std::string sql,Library::Base *library,db::
         TrackVector tempTrackResults;
         tempTrackResults.reserve(101);
         int row(0);
-        while(selectTracks.Step()==db::Row){
+        while(selectTracks.Step()==db::ReturnCode::Row){
             tempTrackResults.push_back(TrackPtr(new LibraryTrack(selectTracks.ColumnInt(0),library->Id())));
             this->trackInfoDuration += selectTracks.ColumnInt64(1);
             this->trackInfoSize     += selectTracks.ColumnInt64(2);
@@ -197,7 +192,7 @@ bool Query::ListBase::SendResults(musik::core::xml::WriterNode &queryNode,Librar
         {
             boost::mutex::scoped_lock lock(library->libraryMutex);
 
-            if( (this->status & Base::Ended)!=0){
+            if( (this->status & Status::Ended)!=0){
                 // If the query is finished, stop sending
                 continueSending = false;
             }
@@ -233,7 +228,7 @@ bool Query::ListBase::SendResults(musik::core::xml::WriterNode &queryNode,Librar
                         musik::core::xml::WriterNode metaValueNode(results,"md");
                         metaValueNode.Attributes()["id"]    = boost::lexical_cast<std::string>( (*metaValue)->id );
 
-                        metaValueNode.Content() = UTF_TO_UTF8( (*metaValue)->value );
+                        metaValueNode.Content() = musik::core::ConvertUTF8( (*metaValue)->value );
 
                     }
 
@@ -312,7 +307,7 @@ bool Query::ListBase::ReceiveResults(musik::core::xml::ParserNode &queryNode,Lib
                         MetadataValuePtr(
                             new MetadataValue(
                                 boost::lexical_cast<unsigned int>( metaDataNode.Attributes()["id"] ),
-                                UTF8_TO_UTF(metaDataNode.Content()).c_str()
+                                ConvertUTF16(metaDataNode.Content()).c_str()
                                 )
                             )
                         );

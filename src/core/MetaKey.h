@@ -49,16 +49,16 @@ class MetaKey{
         ~MetaKey(void);
 
     public:
-        typedef enum {
+        enum Type:int{
             Int         = 1,
             Float       = 2,
             Date        = 3,
             Size        = 4,
             Duration    = 5,
             String      = 6
-        } Type;
+        };
 
-        static Type TypeOf(std::string metaKey);
+        static enum Type TypeOf(std::string metaKey);
 };
 
 //////////////////////////////////////////////////////////////////////////////

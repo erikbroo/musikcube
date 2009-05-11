@@ -33,16 +33,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/xml/Parser.h>
 #include <core/xml/ParserNode.h>
 #include <expat/expat.h>
-#include <boost/algorithm/string/split.hpp>
 
 using namespace musik::core::xml;
 
@@ -63,26 +57,17 @@ Parser::Parser(IReadSupplier *supplier)
  :level(0)
  ,supplier(supplier)
  ,xmlParser(NULL)
- ,xmlParserStatus(XML_STATUS_OK)
+ ,xmlParserStatus(XML_Status::XML_STATUS_OK)
  ,currentEventType(0)
  ,exit(false)
 {
     // Set node stuff
     this->parser        = this;
-	this->InitExpat();
-}
 
-void Parser::InitExpat(){
-	if(this->xmlParser!=NULL){
-		XML_ParserFree(this->xmlParser);
-	}
     this->xmlParser    = XML_ParserCreate(NULL);
     XML_SetUserData(this->xmlParser,this);
     XML_SetElementHandler(this->xmlParser,&Parser::OnElementStart,&Parser::OnElementEnd);
     XML_SetCharacterDataHandler(this->xmlParser,&Parser::OnContent);
-
-	this->xmlParserStatus	= XML_STATUS_OK;
-	this->currentEventType	= 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -115,7 +100,7 @@ void Parser::OnElementStartReal(const char *name, const char **atts){
     this->currentNodeLevels.push_back(node);
 
 
-    this->currentEventType  = NodeStart;
+    this->currentEventType  = EventTypes::NodeStart;
     XML_StopParser(this->xmlParser,true);
 }
 
@@ -131,12 +116,11 @@ void Parser::OnElementEndReal(const char *name){
     if(this->currentNodeLevels.size()>0){
         if(this->currentNodeLevels.back()->name == name){
 
-            this->currentNodeLevels.back()->status   |= Node::Ended;
+            this->currentNodeLevels.back()->status   |= Node::Status::Ended;
             this->currentNodeLevels.pop_back();
 
-            this->currentEventType  = NodeEnd;
+            this->currentEventType  = EventTypes::NodeEnd;
             XML_StopParser(this->xmlParser,true);
-
         }else{
             // Wrong endtag expected, mallformated input
             this->Exit();
@@ -144,8 +128,8 @@ void Parser::OnElementEndReal(const char *name){
         }
     }else{
         // below root level, mallformated input
+        this->Exit();
         XML_StopParser(this->xmlParser,true);
-		this->InitExpat();
     }
 }
 
@@ -163,64 +147,35 @@ void Parser::OnContentReal(const char *content,int length){
 
 //////////////////////////////////////////////////////////////////////////////
 
+
 void Parser::ContinueParsing(){
     this->xmlFound  = false;
-	std::string errorstring;
-	while( !this->xmlFound && !this->exit){
+    while(!this->xmlFound && !this->exit){
         switch(this->xmlParserStatus){
-            case XML_STATUS_SUSPENDED:
+	        case XML_Status::XML_STATUS_SUSPENDED:
 		        this->xmlParserStatus	= XML_ResumeParser(this->xmlParser);
-				if(this->xmlParserStatus==XML_STATUS_ERROR){
-					errorstring	= XML_ErrorString(XML_GetErrorCode(this->xmlParser));
-					errorstring.append(" ");
-				}
 		        break;
-            case XML_STATUS_OK:
+	        case XML_Status::XML_STATUS_OK:
                 if(this->supplier->Exited()){
                     this->Exit();
                     return;
                 }
-
-				{
-					// create a temporary buffer to be able to remove null characters
-					std::string tempBuffer(this->nextBuffer);
-					this->nextBuffer.clear();
-
-					if(tempBuffer.empty()){
-						if(!this->supplier->Read()){
-							return;
-						}
-						tempBuffer.append(this->supplier->Buffer(),this->supplier->BufferSize());
-					}
-
-					static std::string nullCharacter("\0",1);
-					std::string::size_type nullPosition(tempBuffer.find(nullCharacter));
-					if(nullPosition!=std::string::npos){
-						// There is a null char in buffer, lets append to the nextBuffer
-						this->nextBuffer	= tempBuffer.substr(nullPosition+1);
-						tempBuffer.resize(nullPosition);
-					}
-
-
-	//                this->xmlParserStatus	= XML_Parse(this->xmlParser,this->supplier->Buffer(),(int)this->supplier->BufferSize(),0);
-					this->xmlParserStatus	= XML_Parse(this->xmlParser,tempBuffer.c_str(),(int)tempBuffer.size(),0);
-				}
+                if(!this->supplier->Read()){
+                    return;
+                }
+                this->xmlParserStatus	= XML_Parse(this->xmlParser,this->supplier->Buffer(),(int)this->supplier->BufferSize(),0);
 		        break;
-            case XML_STATUS_ERROR:
+            case XML_Status::XML_STATUS_ERROR:
                 this->Exit();
                 break;
         }
     }
-	// check if we need to restart the parser
-	if(this->currentNodeLevels.empty()){
-		this->InitExpat();
-	}
 }
 
 void Parser::Exit(){
     this->exit  = true;
     for(std::vector<Node::Ptr>::iterator node=this->currentNodeLevels.begin();node!=this->currentNodeLevels.end();++node){
-        (*node)->status  = Node::Ended;
+        (*node)->status  = Node::Status::Ended;
     }
 }
 

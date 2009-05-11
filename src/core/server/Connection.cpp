@@ -33,12 +33,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/server/Connection.h>
 #include <core/Common.h>
 #include <core/Preferences.h>
@@ -106,15 +101,15 @@ void Connection::ReadThread(){
     try{
 
         // Test waiting for a Node
-//        if( musik::core::xml::ParserNode root = xmlParser.ChildNode("musik") ){
+        if( musik::core::xml::ParserNode root = xmlParser.ChildNode("musik") ){
             // musik node initialized
 
             // Wait for authentication
-            if( musik::core::xml::ParserNode userNode = xmlParser.ChildNode("authentication") ){
+            if( musik::core::xml::ParserNode userNode = root.ChildNode("authentication") ){
                 userNode.WaitForContent();
 
                 // Get the user
-                UserPtr user = this->server->GetUser(userNode.Attributes()["username"]);
+                UserPtr user = this->server->GetUser(musik::core::ConvertUTF16(userNode.Attributes()["username"]));
                 if(user){
                     // Create a new usersession
                     
@@ -146,7 +141,7 @@ void Connection::ReadThread(){
             musik::core::Query::Factory::GetQueries(queryMap);
 
             // Loop waiting for queries
-            while( musik::core::xml::ParserNode queryNode = xmlParser.ChildNode("query") ){
+            while( musik::core::xml::ParserNode queryNode = root.ChildNode("query") ){
                 // Got a query
                 std::string queryType(queryNode.Attributes()["type"]);
                 
@@ -184,7 +179,7 @@ void Connection::ReadThread(){
 
                 }
             }
-//        }
+        }
         
     }
     catch(...){
@@ -216,7 +211,7 @@ void Connection::ParseThread(){
                 this->outgoingQueries.push_back(query);
 
                 // Set query as started
-                query->status |= Query::Base::Started;
+                query->status |= Query::Base::Status::Started;
             }
 
             ////////////////////////////////////////////////////////////
@@ -226,7 +221,7 @@ void Connection::ParseThread(){
                 boost::mutex::scoped_lock lock(this->libraryMutex);
                 this->runningQuery.reset();
                 // And set it as finished
-                query->status |= Query::Base::Ended;
+                query->status |= Query::Base::Status::Ended;
             }
 
             ////////////////////////////////////////////////////////////
@@ -257,12 +252,12 @@ void Connection::WriteThread(){
 
     try{
         // Lets start with a <musik> node
-//        musik::core::xml::WriterNode musikNode(xmlWriter,"musik");
+        musik::core::xml::WriterNode musikNode(xmlWriter,"musik");
 
         // Start by initializing the user
         // Send a random salt for password encryption
         {
-            musik::core::xml::WriterNode initNode(xmlWriter,"authentication");
+            musik::core::xml::WriterNode initNode(musikNode,"authentication");
             initNode.Content()  = this->salt;
         }
         xmlWriter.Flush();
@@ -302,7 +297,7 @@ void Connection::WriteThread(){
             if(sendQuery){
                 // Send the query
                 {
-                    musik::core::xml::WriterNode queryNode(xmlWriter,"queryresults");
+                    musik::core::xml::WriterNode queryNode(musikNode,"queryresults");
                     queryNode.Attributes()["type"]  = sendQuery->Name();
                     queryNode.Attributes()["id"]    = boost::lexical_cast<std::string>(sendQuery->queryId);
                     queryNode.Attributes()["uid"]   = boost::lexical_cast<std::string>(sendQuery->uniqueId);

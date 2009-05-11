@@ -33,12 +33,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/xml/ParserNode.h>
 #include <core/xml/Parser.h>
 
@@ -166,7 +161,7 @@ ParserNode ParserNode::ChildNode(std::string expectedNode) const{
 //////////////////////////////////////////
 ParserNode::~ParserNode(){
     if(this->node && this->status==1){
-        while(this->node->status!=Node::Ended){
+        while(this->node->status!=Node::Status::Ended){    
             // Wait for node to be ended
             this->parser->ContinueParsing();
         }
@@ -199,7 +194,7 @@ std::string& ParserNode::Content(){
 //////////////////////////////////////////
 void ParserNode::WaitForContent(){
     if(this->node && this->status==1){
-        while( !(this->node->status & Node::Ended) ){
+        while( !(this->node->status & Node::Status::Ended) ){    
             // Wait for node to be ended
             this->parser->ContinueParsing();
         }
@@ -265,7 +260,7 @@ void ParserNode::WaitForNode(const std::set<std::string> &nodeNames){
                 this->status=-1;
             }else{
                 // Check if this is the expected EventType
-                if(this->parser->currentEventType==Parser::NodeStart){
+                if(this->parser->currentEventType==Parser::EventTypes::NodeStart){
                     
                     // Is the "level" the right one?
                     // This is a check so that the parser isn't a level down from the expected

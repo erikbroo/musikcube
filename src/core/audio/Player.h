@@ -116,11 +116,11 @@ class Player : public IPlayer {
         BufferList bufferQueue;
         BufferList lockedBuffers;
     
-        typedef enum {
+        enum State:int {
             Precache    = 0,
             Playing     = 1,
             Quit        = 2
-        } States;
+        };
 
         int state;
         boost::mutex mutex;

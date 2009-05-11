@@ -33,12 +33,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/filestreams/LocalFileStream.h>
 #include <core/config.h>
 #include <core/config_filesystem.h>
@@ -49,7 +44,7 @@
 typedef fpos_t  stdioPositionType;
 #else
 #define UTFFopen    fopen
-typedef fpos_t stdioPositionType;
+typedef int stdioPositionType;
 #endif
 //////////////////////////////////////////////////////////////////////////////
 
@@ -76,12 +71,9 @@ bool LocalFileStream::Open(const utfchar *filename,unsigned int options){
         boost::filesystem::utfpath file(filename);
         this->filesize  = (long)boost::filesystem::file_size(file);
         this->extension = file.extension();
-//	this->file = UTFFopen(filename,UTF("rb"));
-        this->fd  = new boost::iostreams::file_descriptor(filename);
-	this->fileStream = new boost::iostreams::stream<boost::iostreams::file_descriptor>(this->fd);
-	this->fileStream->exceptions ( std::ios_base::eofbit | std::ios_base::failbit | std::ios_base::badbit );
-        return this->file!=NULL;
 
+        this->file  = UTFFopen(filename,UTF("rb"));
+        return this->file!=NULL;
     }
     catch(...){
         return false;
@@ -92,8 +84,6 @@ bool LocalFileStream::Close(){
     if(this->file){
         if(fclose(this->file)==0){
             this->file  = NULL;
-	    delete this->fd;
-	    delete this->fileStream;
             return true;
         }
     }
@@ -105,48 +95,24 @@ void LocalFileStream::Destroy(){
 }
 
 PositionType LocalFileStream::Read(void* buffer,PositionType readBytes){
-    //return (PositionType)fread(buffer,1,readBytes,this->file);
-    try	{
-    	this->fileStream->read((char*)buffer, readBytes);
-    }
-    catch (std::ios_base::failure)	{
-	if(this->fileStream->eof())	{
-		//EOF reached
-		return sizeof(buffer);
-	}
-	else	{
-		std::cerr << "Error reading from file" << std::endl;
-	}
-	return 0;
-    }
-    return readBytes;
+    return (PositionType)fread(buffer,1,readBytes,this->file);
 }
 
 bool LocalFileStream::SetPosition(PositionType position){
-    /*stdioPositionType newPosition  = (stdioPositionType)position;
-    return fsetpos(this->file,&newPosition)==0;*/
-    try	{
-    	this->fileStream->seekp(position);
-    	this->fileStream->seekg(position);
-    }
-    catch (std::ios_base::failure)	{
-    	return false;
-    }
-    return true;
+    stdioPositionType newPosition  = (stdioPositionType)position;
+    return fsetpos(this->file,&newPosition)==0;
 }
 
 PositionType LocalFileStream::Position(){
-    /*stdioPositionType currentPosition(0);
+    stdioPositionType currentPosition(0);
     if(fgetpos(this->file,&currentPosition)==0){
         return (PositionType)currentPosition;
     }
-    return -1;*/
-    return this->fileStream->tellg();
+    return -1;
 }
 
 bool LocalFileStream::Eof(){
-    //return feof(this->file)!=0;
-    return this->fileStream->eof();
+    return feof(this->file)!=0;
 }
 
 long LocalFileStream::Filesize(){

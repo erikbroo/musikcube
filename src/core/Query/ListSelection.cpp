@@ -34,12 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/Query/ListSelection.h>
 #include <core/Library/Base.h>
 #include <core/xml/ParserNode.h>
@@ -262,8 +257,7 @@ bool Query::ListSelection::ParseQuery(Library::Base *library,db::Connection &db)
     // or selections that are empty
     for(MetadataSignals::iterator signal=this->metadataEvent.begin();signal!=this->metadataEvent.end();){
         if( !signal->second.has_connections() ){
-            this->metadataEvent.erase(signal);
-            signal=this->metadataEvent.begin();
+            signal    = this->metadataEvent.erase(signal);
         }else{
             ++signal;
         }
@@ -271,8 +265,7 @@ bool Query::ListSelection::ParseQuery(Library::Base *library,db::Connection &db)
 
     for(SelectedMetadata::iterator selected=this->selectedMetadata.begin();selected!=this->selectedMetadata.end();){
         if( selected->second.empty() ){
-            this->selectedMetadata.erase(selected);
-            selected    = this->selectedMetadata.begin();
+            selected    = this->selectedMetadata.erase(selected);
         }else{
             ++selected;
         }
@@ -432,7 +425,7 @@ bool Query::ListSelection::ParseQuery(Library::Base *library,db::Connection &db)
 
             metakeyId.BindText(0,*metakey);
 
-            if(metakeyId.Step()==db::Row){
+            if(metakeyId.Step()==db::ReturnCode::Row){
 
                 std::string metadataKeyId(metakeyId.ColumnText(0));
                 std::string sql("SELECT mv.id,mv.content FROM meta_values mv WHERE mv.meta_key_id=");
@@ -531,7 +524,7 @@ void Query::ListSelection::QueryForMetadata(const char *metakey,const char *sql,
             this->metadataResults[metakey];
         }
 
-        while(metaValueStmt.Step()==db::Row){
+        while(metaValueStmt.Step()==db::ReturnCode::Row){
             tempMetadataValues.push_back(
                     MetadataValuePtr(
                         new MetadataValue(

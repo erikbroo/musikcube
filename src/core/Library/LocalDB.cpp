@@ -34,12 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
-
 #include <core/Library/LocalDB.h>
 #include <core/Query/Base.h>
 #include <core/Preferences.h>
@@ -159,7 +154,7 @@ void Library::LocalDB::ThreadLoop(){
                 this->outgoingQueries.push_back(query);
 
                 // Set query as started
-                query->status |= Query::Base::Started;
+                query->status |= Query::Base::Status::Started;
             }
 
             ////////////////////////////////////////////////////////////
@@ -172,7 +167,7 @@ void Library::LocalDB::ThreadLoop(){
                 boost::mutex::scoped_lock lock(this->libraryMutex);
                 this->runningQuery.reset();
                 // And set it as finished
-                query->status |= Query::Base::Ended;
+                query->status |= Query::Base::Status::Ended;
             }
 
             ////////////////////////////////////////////////////////////

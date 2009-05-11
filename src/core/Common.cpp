@@ -67,7 +67,7 @@ utfstring musik::core::GetApplicationDirectory(){
     utfstring sDirectory;
 
     #ifdef WIN32
-        utfchar szPath[2048];
+        TCHAR szPath[2048];
         int iStrLength    = GetModuleFileName(NULL,szPath,2048);
         if(iStrLength!=0 && iStrLength<2048 ){
             sDirectory.assign( GetPath(utfstring(szPath)) );
@@ -83,7 +83,7 @@ utfstring musik::core::GetDataDirectory(){
     #ifdef WIN32
         DWORD iBufferSize    = GetEnvironmentVariable(UTF("APPDATA"), 0, 0);
 
-        utfchar *sBuffer    = new utfchar[iBufferSize+2];
+        LPTSTR sBuffer    = new TCHAR[iBufferSize+2];
         GetEnvironmentVariable(UTF("APPDATA"), sBuffer, iBufferSize);
         directory.assign(sBuffer);
 
@@ -113,15 +113,11 @@ utfstring musik::core::GetDataDirectory(){
 ///String with path.
 //////////////////////////////////////////
 utfstring musik::core::GetPath(const utfstring &sFile){
-    
     utfstring sPath;
-    int iStrLength;
 
-#ifdef WIN32
-
-    utfchar szPath[2048];
-    utfchar *szFile=NULL;
-    iStrLength    = GetFullPathName(sFile.c_str(),2048,szPath,&szFile);
+    TCHAR szPath[2048];
+    TCHAR *szFile=NULL;
+    int iStrLength    = GetFullPathNameW(sFile.c_str(),2048,szPath,&szFile);
     if(iStrLength!=0 && iStrLength<2048 ){
         sPath.assign(szPath);
         if(szFile!=0){
@@ -131,11 +127,7 @@ utfstring musik::core::GetPath(const utfstring &sFile){
     }else{
         sPath.assign(sFile);
     }
- #else	//TODO: check this POSIX GetPath works
-    utfchar* szDir;
-    sPath.assign(getcwd((char*)szDir, (size_t) iStrLength));
 
- #endif //WIN32
     return sPath;
 }
 

@@ -38,10 +38,6 @@
 
 #include <core/config.h>
 #include <boost/shared_ptr.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/stream_buffer.hpp>
-#include <boost/iostreams/device/file_descriptor.hpp>
-
 
 //////////////////////////////////////////////////////////////////////////////
 namespace musik{ namespace core{ namespace filestreams{

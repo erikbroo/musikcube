@@ -46,7 +46,7 @@ namespace musik{ namespace core{
     class ThreadHelper{
         public:
             ThreadHelper(void);
-            virtual ~ThreadHelper(void);
+            ~ThreadHelper(void);
 
             virtual void Exit();
             boost::mutex exitMutex;

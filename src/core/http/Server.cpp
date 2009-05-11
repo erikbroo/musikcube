@@ -34,11 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
 #include "pch.hpp"
-#else
-#include <core/pch.hpp>
-#endif
 
 #include <core/http/Server.h>
 #include <core/http/Responder.h>
@@ -179,7 +175,7 @@ bool Server::FreeResponder(Responder *responder){
     while(tempResponder!=this->busyResponders.end()){
         if(tempResponder->get()==responder){
             this->freeResponders.push(*tempResponder);
-            this->busyResponders.erase(tempResponder);
+            tempResponder   = this->busyResponders.erase(tempResponder);
             return true;
         }else{
             ++tempResponder;

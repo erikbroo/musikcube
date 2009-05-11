@@ -110,7 +110,6 @@ class Parser : public ParserNode{
         static void OnContent(void *thisobject,const char *content,int length);
         void OnContentReal(const char *content,int length);
 
-		void InitExpat();
 
     private:
         friend class ParserNode;
@@ -118,11 +117,11 @@ class Parser : public ParserNode{
         bool exit;
         void Exit();
 
-        typedef enum {
+        enum EventTypes:int{
             NodeStart=1,
             NodeEnd=2,
             Content=3
-        } EventTypes;
+        };
 
         Node::Ptr LastNode();
 		void ContinueParsing();
@@ -132,7 +131,6 @@ class Parser : public ParserNode{
 
         bool xmlFound;
 
-		std::string nextBuffer;
 
 };
 

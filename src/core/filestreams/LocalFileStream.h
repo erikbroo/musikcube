@@ -61,10 +61,7 @@ class LocalFileStream : public IFileStream{
 
     private:
         utfstring extension;
-	FILE *file;
-
-	boost::iostreams::file_descriptor* fd;
-	boost::iostreams::stream<boost::iostreams::file_descriptor>* fileStream;
+        FILE *file;
 
         long filesize;
 
